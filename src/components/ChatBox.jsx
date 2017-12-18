@@ -11,6 +11,12 @@ import {isAuthenticated} from '../utils/auth';
 import {CHANNEL_TYPES} from '../constants/Api';
 
 export default class ChatBox extends React.Component {
+  constructor(){
+    super()
+    this.state = {
+      showEmailForm: false
+    }
+  }
   getView() {
     if (this.props.channelView) {
       return this.props.channelView;
@@ -91,7 +97,7 @@ export default class ChatBox extends React.Component {
               <button type="button" className="btn btn-default pull-left">
                 <Link to='/call'>Schedule call </Link>
               </button>
-              <button type="button" className="btn btn-default pull-right">Contact me via email</button>
+              <button type="button" onClick={() => this.setState({showEmailForm: true})} className="btn btn-default pull-right">Contact me via email</button>
             </div>
           </div>
         )
@@ -127,8 +133,15 @@ export default class ChatBox extends React.Component {
       if (activities.length >= 2 && !isAuthenticated()) {
         activities = [
           ...activities.slice(0, 2),
-          this.getEmailForm(),
+          this.getOfflineActionsActivity(),
           ...activities.slice(2),
+        ];
+      }
+      if (activities.length >= 3 && !isAuthenticated() && this.state.showEmailForm) {
+        activities = [
+          ...activities.slice(0, 3),
+          this.getEmailForm(),
+          ...activities.slice(3),
         ];
       }
     }
